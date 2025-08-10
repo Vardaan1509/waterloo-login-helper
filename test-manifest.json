@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Waterloo Login Helper - TEST VERSION",
+  "version": "1.0",
+  "description": "Test version for debugging",
+  
+  "permissions": [
+    "storage",
+    "activeTab"
+  ],
+  
+  "host_permissions": [
+    "*://adfs.uwaterloo.ca/*",
+    "*://learn.uwaterloo.ca/*",
+    "*://quest.pecs.uwaterloo.ca/*"
+  ],
+  
+  "content_scripts": [
+    {
+      "matches": ["*://adfs.uwaterloo.ca/*", "*://learn.uwaterloo.ca/*", "*://quest.pecs.uwaterloo.ca/*"],
+      "js": ["test-content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "UW Login Helper - TEST"
+  }
+}
+

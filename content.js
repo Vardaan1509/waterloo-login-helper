@@ -40,6 +40,8 @@
         // 🎓 Learning: Multiple ways to find HTML elements
         // Try different selectors that might match the email field
         const selectors = [
+            'input[name="UserName"]',           // ADFS specific
+            'input[id="userNameInput"]',        // ADFS specific  
             'input[type="email"]',
             'input[name="email"]',
             'input[name="username"]',
@@ -63,6 +65,8 @@
     function findPasswordField() {
         // 🎓 Learning: Finding password fields
         const selectors = [
+            'input[name="Password"]',           // ADFS specific
+            'input[id="passwordInput"]',        // ADFS specific
             'input[type="password"]',
             'input[name="password"]',
             'input[id*="password"]',
@@ -83,17 +87,27 @@
     function findLoginButton() {
         // 🎓 Learning: Finding submit buttons
         const selectors = [
+            'input[id="submitButton"]',         // ADFS specific
+            'input[value="Sign in"]',           // ADFS specific
             'button[type="submit"]',
-            'input[type="submit"]',
-            'button:contains("Sign In")',
-            'button:contains("Login")',
-            'button:contains("Log In")'
+            'input[type="submit"]'
         ];
         
         for (let selector of selectors) {
             const element = document.querySelector(selector);
             if (element) {
                 return element;
+            }
+        }
+        
+        // Alternative: find buttons by text content (safer approach)
+        const buttons = document.querySelectorAll('button, input[type="submit"], input[type="button"]');
+        for (let button of buttons) {
+            const text = button.textContent || button.value || '';
+            if (text.toLowerCase().includes('sign in') || 
+                text.toLowerCase().includes('login') || 
+                text.toLowerCase().includes('log in')) {
+                return button;
             }
         }
         
@@ -225,8 +239,8 @@
         mutations.forEach(function(mutation) {
             if (mutation.addedNodes.length > 0) {
                 // Check if a login form was added
-                const hasEmailField = document.querySelector('input[type="email"], input[name="email"], input[name="username"]');
-                const hasPasswordField = document.querySelector('input[type="password"]');
+                const hasEmailField = document.querySelector('input[name="UserName"], input[id="userNameInput"], input[type="email"], input[name="email"], input[name="username"]');
+                const hasPasswordField = document.querySelector('input[name="Password"], input[id="passwordInput"], input[type="password"]');
                 
                 if (hasEmailField && hasPasswordField) {
                     console.log('🎓 Dynamic login form detected!');

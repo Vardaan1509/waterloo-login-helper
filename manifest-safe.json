@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "Waterloo Learn Auto-Login Helper",
-  "version": "1.0",
-  "description": "Automatically fills your Waterloo Learn credentials to save time and hassle!",
+  "name": "Waterloo Login Helper - SAFE VERSION",
+  "version": "1.1",
+  "description": "Safe version with error handling",
   
   "permissions": [
     "storage",
@@ -17,13 +17,14 @@
   "content_scripts": [
     {
       "matches": ["*://adfs.uwaterloo.ca/*", "*://learn.uwaterloo.ca/*"],
-      "js": ["content.js"],
+      "js": ["content-safe.js"],
       "run_at": "document_end"
     }
   ],
   
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Waterloo Login Helper"
+    "default_title": "UW Login Helper - SAFE"
   }
 }
+
