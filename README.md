@@ -19,13 +19,7 @@
 - 🛡️ **Privacy First** - No data sent to external servers
 - 🔧 **Easy Setup** - One-time configuration, lifetime convenience
 
-## 🚀 What You've Built & Learned
 
-### **Core Technologies:**
-- **JavaScript** - Extension logic and DOM manipulation
-- **HTML/CSS** - Beautiful popup interface
-- **Chrome Extension APIs** - Storage, content scripts, permissions
-- **Web Security** - Secure credential storage and validation
 
 ### **Key Programming Concepts Learned:**
 1. **Event-Driven Programming** - Responding to user clicks and page loads
@@ -71,15 +65,7 @@ waterloo-login-helper/
 - **Domain Restricted** - Only works on uwaterloo.ca
 - **Input Validation** - Ensures proper email format
 
-## 🎓 Learning Extensions
 
-Want to learn more? Try these enhancements:
-
-1. **Add More Sites** - Support other Waterloo services
-2. **Better Icons** - Create custom extension icons
-3. **Keyboard Shortcuts** - Add hotkeys for quick access
-4. **Multiple Accounts** - Support switching between accounts
-5. **Auto-Login Option** - Automatically click login button
 
 ## 🐛 Troubleshooting
 
