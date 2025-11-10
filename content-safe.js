@@ -186,40 +186,41 @@
     }
     
     function showAutoFillNotification() {
-        try {
-            const notification = document.createElement('div');
-            notification.innerHTML = '🎓 Credentials auto-filled!';
-            notification.style.cssText = `
-                position: fixed;
-                top: 20px;
-                right: 20px;
-                background: #2196F3;
-                color: white;
-                padding: 12px 16px;
-                border-radius: 6px;
-                z-index: 10001;
-                font-family: Arial, sans-serif;
-                font-size: 14px;
-                box-shadow: 0 4px 12px rgba(0,0,0,0.15);
-            `;
-            
-            document.body.appendChild(notification);
-            
-            // Remove notification after 3 seconds
-            setTimeout(() => {
-                try {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                } catch (removeError) {
-                    console.error('🎓 ERROR removing notification:', removeError);
+    try {
+        const notification = document.createElement('div');
+        notification.innerHTML = '🎓 Credentials auto-filled!';
+        notification.style.cssText = `
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2196F3;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px;
+            z-index: 10001;
+            font-family: Arial, sans-serif;
+            font-size: 14px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        `;
+        
+        document.body.appendChild(notification);
+        
+        // Remove notification after 3 seconds
+        setTimeout(() => {
+            try {
+                if (notification.parentNode) {
+                    notification.parentNode.removeChild(notification);
                 }
-            }, 3000);
-            
-        } catch (error) {
-            console.error('🎓 ERROR in showAutoFillNotification:', error);
-        }
+            } catch (removeError) {
+                console.error('🎓 ERROR removing notification:', removeError);
+            }
+        }, 3000);
+        
+    } catch (error) {
+        console.error('🎓 ERROR showing notification:', error);
     }
+}
+
     
     console.log('🎓 Content script initialization complete');
     
