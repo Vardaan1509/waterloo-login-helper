@@ -65,7 +65,7 @@ document.addEventListener('DOMContentLoaded', function() {
                 // Auto-close popup after 2 seconds
                 setTimeout(() => {
                     window.close();
-                }, 2000);
+                }, 2);
             }
         });
     }
