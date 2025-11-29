@@ -1,10 +1,9 @@
-// 🎓 Learning: Content scripts run on web pages and can interact with the page's HTML
-
+// ...existing code...
 (function() {
     'use strict';
     
-    // 🎓 Learning: IIFE (Immediately Invoked Function Expression) 
-    // This prevents our variables from conflicting with the website's code
+    // Guard object to avoid repeated fills/notifications across the page lifecycle
+    if (!window.__uwHelperState) window.__uwHelperState = { autofilled: false, notified: false };
     
     console.log('🎓 Waterloo Login Helper: Content script loaded!');
     
@@ -23,9 +22,19 @@
             // Get saved credentials and fill the form
             chrome.storage.sync.get(['uwEmail', 'uwPassword'], function(result) {
                 if (result.uwEmail && result.uwPassword) {
+                    // If we've already autofilled once, don't fill again.
+                    if (window.__uwHelperState.autofilled) {
+                        console.log('🎓 Already autofilled — ensuring persistent notification is present.');
+                        if (!window.__uwHelperState.notified) {
+                            showAutoFillNotification();
+                            window.__uwHelperState.notified = true;
+                        }
+                        return;
+                    }
+                    
                     fillLoginForm(emailField, passwordField, result.uwEmail, result.uwPassword);
                     
-                    // Add a helpful indicator
+                    // Add a helpful indicator (short-lived)
                     addAutoFillIndicator(emailField);
                 } else {
                     console.log('🎓 No saved credentials found. Set them up in the extension popup!');
@@ -37,8 +46,7 @@
     }
     
     function findEmailField() {
-        // 🎓 Learning: Multiple ways to find HTML elements
-        // Try different selectors that might match the email field
+        // ...existing code...
         const selectors = [
             'input[name="UserName"]',           // ADFS specific
             'input[id="userNameInput"]',        // ADFS specific  
@@ -63,7 +71,7 @@
     }
     
     function findPasswordField() {
-        // 🎓 Learning: Finding password fields
+        // ...existing code...
         const selectors = [
             'input[name="Password"]',           // ADFS specific
             'input[id="passwordInput"]',        // ADFS specific
@@ -85,7 +93,7 @@
     }
     
     function findLoginButton() {
-        // 🎓 Learning: Finding submit buttons
+        // ...existing code...
         const selectors = [
             'input[id="submitButton"]',         // ADFS specific
             'input[value="Sign in"]',           // ADFS specific
@@ -100,7 +108,6 @@
             }
         }
         
-        // Alternative: find buttons by text content (safer approach)
         const buttons = document.querySelectorAll('button, input[type="submit"], input[type="button"]');
         for (let button of buttons) {
             const text = button.textContent || button.value || '';
@@ -130,33 +137,30 @@
             
             console.log('🎓 Credentials filled! You can now click login or press Enter.');
             
-            // Optional: Show a subtle notification
-            showAutoFillNotification();
+            // Mark as autofilled so we don't do this repeatedly
+            window.__uwHelperState.autofilled = true;
+            
+            // Show persistent notification (only once)
+            if (!window.__uwHelperState.notified) {
+                showAutoFillNotification();
+                window.__uwHelperState.notified = true;
+            }
             
         }, 500);
     }
     
     function setInputValue(input, value) {
-        // 🎓 Learning: Properly setting input values to trigger form validation
-        
-        // Focus the input first
+        // ...existing code...
         input.focus();
-        
-        // Clear existing value
         input.value = '';
-        
-        // Set new value
         input.value = value;
-        
-        // Trigger events that websites expect
         input.dispatchEvent(new Event('input', { bubbles: true }));
         input.dispatchEvent(new Event('change', { bubbles: true }));
         input.dispatchEvent(new Event('blur', { bubbles: true }));
     }
     
     function addAutoFillIndicator(emailField) {
-        // 🎓 Learning: Adding visual feedback to show auto-fill is active
-        
+        // ...existing code...
         const indicator = document.createElement('div');
         indicator.innerHTML = '🎓 Auto-filled by UW Helper';
         indicator.style.cssText = `
@@ -175,7 +179,7 @@
         // Position it near the email field
         emailField.parentNode.insertBefore(indicator, emailField.nextSibling);
         
-        // Remove indicator after 3 seconds
+        // Remove indicator after 3 seconds (keeps the main notification persistent)
         setTimeout(() => {
             if (indicator.parentNode) {
                 indicator.parentNode.removeChild(indicator);
@@ -184,9 +188,24 @@
     }
     
     function showAutoFillNotification() {
-        // 🎓 Learning: Creating temporary notifications
+        // Only create one persistent notification per page
+        if (document.getElementById('uw-helper-autofill-notification')) return;
+        
+        // Add style once
+        if (!document.getElementById('uw-helper-autofill-style')) {
+            const style = document.createElement('style');
+            style.id = 'uw-helper-autofill-style';
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(100%); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+        }
         
         const notification = document.createElement('div');
+        notification.id = 'uw-helper-autofill-notification';
         notification.innerHTML = `
             <div style="display: flex; align-items: center; gap: 8px;">
                 <span>🎓</span>
@@ -208,33 +227,11 @@
             animation: slideIn 0.3s ease-out;
         `;
         
-        // Add CSS animation
-        const style = document.createElement('style');
-        style.textContent = `
-            @keyframes slideIn {
-                from { transform: translateX(100%); opacity: 0; }
-                to { transform: translateX(0); opacity: 1; }
-            }
-        `;
-        document.head.appendChild(style);
-        
+        // Persistent: do NOT auto-remove the notification
         document.body.appendChild(notification);
-        
-        // Remove notification after 4 seconds
-        setTimeout(() => {
-            if (notification.parentNode) {
-                notification.style.animation = 'slideIn 0.3s ease-out reverse';
-                setTimeout(() => {
-                    if (notification.parentNode) {
-                        notification.parentNode.removeChild(notification);
-                    }
-                }, 300);
-            }
-        }, 4000);
     }
     
     // 🎓 Learning: Handle dynamic content loading
-    // Some websites load login forms dynamically, so we watch for changes
     const observer = new MutationObserver(function(mutations) {
         mutations.forEach(function(mutation) {
             if (mutation.addedNodes.length > 0) {
@@ -244,7 +241,13 @@
                 
                 if (hasEmailField && hasPasswordField) {
                     console.log('🎓 Dynamic login form detected!');
-                    setTimeout(initializeAutoLogin, 500);
+                    // If we've already autofilled and shown the notification, no need to re-run heavy logic.
+                    if (!window.__uwHelperState.autofilled) {
+                        setTimeout(initializeAutoLogin, 500);
+                    } else if (!window.__uwHelperState.notified) {
+                        showAutoFillNotification();
+                        window.__uwHelperState.notified = true;
+                    }
                 }
             }
         });
