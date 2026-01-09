@@ -35,3 +35,4 @@ node_modules/
 # Personal notes
 notes.txt
 todo.txt
+.env
