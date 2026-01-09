@@ -3,7 +3,12 @@
     'use strict';
     
     // Guard object to avoid repeated fills/notifications across the page lifecycle
-    if (!window.__uwHelperState) window.__uwHelperState = { autofilled: false, notified: false, processingNotification: false };
+    if (!window.__uwHelperState) window.__uwHelperState = {
+        autofilled: false,
+        notified: false,
+        processingNotification: false,
+        lastObserverCheck: 0
+    };
     
     console.log('🎓 Waterloo Login Helper: Content script loaded!');
     
@@ -253,6 +258,14 @@
         observer = new MutationObserver(function(mutations) {
             // Skip if we're processing a notification
             if (window.__uwHelperState.processingNotification) return;
+
+            // Throttle observer checks to prevent rapid fire calls
+            const now = Date.now();
+            if (now - window.__uwHelperState.lastObserverCheck < 500) return;
+            window.__uwHelperState.lastObserverCheck = now;
+
+            // If already notified, don't bother checking further
+            if (window.__uwHelperState.notified) return;
 
             mutations.forEach(function(mutation) {
                 if (mutation.addedNodes.length > 0) {
